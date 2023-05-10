@@ -65,3 +65,5 @@ end
 gem "shakapacker", "= 6.6"
 
 gem "react-rails", "= 2.7"
+
+gem "dotenv-rails", "~> 2.8", :group => :development
