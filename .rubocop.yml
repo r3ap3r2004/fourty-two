@@ -1,0 +1,36 @@
+inherit_from: .rubocop_todo.yml
+require:
+  - rubocop-rspec
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-capybara
+
+Rails:
+  Enabled: true
+
+AllCops:
+  NewCops: enable
+  DefaultFormatter: progress
+  DisplayCopNames: true
+  Exclude:
+    - .gem/**/*
+    - bin/**/*
+    - build/**/*
+    - deploy/**/*
+    - db/schema.rb
+    - db/seeds.rb
+    - db/migrate/*
+    - gems/**/*
+    - log/**/*
+    - node_modules/**/*
+    - public/**/*
+    - tmp/**/*
+    - vendor/**/*
+    - .pryrc
+
+  # Set cache directory inside project root.
+  # This will speed up rubocop being run with docker-compose
+  CacheRootDirectory: tmp/
+
+Rails/I18nLocaleTexts:
+  Enabled: false
