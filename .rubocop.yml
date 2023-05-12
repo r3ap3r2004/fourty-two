@@ -32,5 +32,18 @@ AllCops:
   # This will speed up rubocop being run with docker-compose
   CacheRootDirectory: tmp/
 
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - lib/book_parser.rb
+
 Rails/I18nLocaleTexts:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - lib/book_parser.rb
+
+Metrics/AbcSize:
+  Exclude:
+    - lib/book_parser.rb
