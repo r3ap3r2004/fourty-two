@@ -176,6 +176,13 @@ export const booksApi = createApi({
         method: "GET",
       }),
     }),
+    contact: builder.mutation({
+      query: (formData) => ({
+        url: `/contact.json`,
+        method: "POST",
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -188,4 +195,5 @@ export const {
   useAskQuestionMutation,
   useFeelingLuckyQuery,
   useStreamMessagesQuery,
+  useContactMutation,
 } = booksApi;
