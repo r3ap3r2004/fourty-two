@@ -15,13 +15,13 @@ class OpenAIError < StandardError; end
 #   - embeddings: the embeddings generated for the page
 class BookParser
   # Set the rate limits
-  REQUESTS_PER_MINUTE = ENV.fetch('REQUESTS_PER_MINUTE', 60)
-  TOKENS_PER_MINUTE = ENV.fetch('TOKENS_PER_MINUTE', 150_000)
-  MODEL = ENV.fetch('MODEL', 'text-embedding-ada-002')
+  REQUESTS_PER_MINUTE = ENV.fetch('REQUESTS_PER_MINUTE', 60).to_i
+  TOKENS_PER_MINUTE = ENV.fetch('TOKENS_PER_MINUTE', 150_000).to_i
+  EMBEDDINGS_MODEL = ENV.fetch('EMBEDDINGS_MODEL', 'text-embedding-ada-002')
+  EMBEDDINGS_ENDPOINT_URL = ENV.fetch('EMBEDDINGS_ENDPOINT_URL', 'https://api.openai.com/v1/embeddings')
 
-  ENDPOINT_URL = 'https://api.openai.com/v1/embeddings'
   AUTH_HEADERS = {
-    'Authorization' => "Bearer #{ENV.fetch('OPENAI_API_KEY')}",
+    'Authorization' => "Bearer #{ENV.fetch('OPENAI_API_KEY', nil)}",
     'Content-Type' => 'application/json'
   }.freeze
 
@@ -34,7 +34,7 @@ class BookParser
     Rails.logger.debug { "Output filepath: #{output_filepath}" }
     Rails.logger.debug { "REQUESTS_PER_MINUTE: #{REQUESTS_PER_MINUTE}" }
     Rails.logger.debug { "TOKENS_PER_MINUTE: #{TOKENS_PER_MINUTE}" }
-    Rails.logger.debug { "MODEL: #{MODEL}" }
+    Rails.logger.debug { "EMBEDDINGS_MODEL: #{EMBEDDINGS_MODEL}" }
 
     # 1. open the pdf file
     pdf_file = File.open(input_filepath, 'rb')
@@ -47,7 +47,7 @@ class BookParser
     last_minute = Time.now.to_i
     request_count = 0
 
-    encoding = Tiktoken.encoding_for_model(MODEL)
+    encoding = Tiktoken.encoding_for_model(EMBEDDINGS_MODEL)
 
     # Open the CSV file and write the headers
     CSV.open(output_filepath, 'w') do |csv|
@@ -59,8 +59,8 @@ class BookParser
           # Extract the text from the page
           page_text = page.text
 
-          # strip www.freeclassicebooks.com <page number> from the beginning of content
-          page_text = page_text.gsub(/www.freeclassicebooks.com \d+/, '')
+          # strip www.freeclassicebooks.com <page number> from the beginning of content, also remove extra spaces
+          page_text = page_text.gsub('www.freeclassicebooks.com', '').split.join(' ')
 
           Rails.logger.debug { "Page #{i + 1}: #{page_text}" }
 
@@ -121,11 +121,11 @@ class BookParser
   # Method to call the OpenAI embeddings endpoint with a single input string
   def self.call_openai_embeddings_api(input_string)
     response = HTTParty.post(
-      ENDPOINT_URL,
+      EMBEDDINGS_ENDPOINT_URL,
       headers: AUTH_HEADERS,
       body: {
         input: input_string,
-        model: MODEL
+        model: EMBEDDINGS_MODEL
       }.to_json
     )
 
