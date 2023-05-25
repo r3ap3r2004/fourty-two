@@ -1,0 +1,19 @@
+{
+  "id": "cmpl-7JwZOJdgCi3ouoXp04so8TKSSJwtO",
+  "object": "text_completion",
+  "created": "1_684_987_730",
+  "model": "text-davinci-003",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "logprobs": "",
+      "text": "The author is Mark Twain."
+    }
+  ],
+  "usage": {
+    "total_tokens": 691,
+    "completion_tokens": 6,
+    "prompt_tokens": 685
+  }
+}
