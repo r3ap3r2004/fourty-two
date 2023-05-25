@@ -1,7 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const isMessage = (arg) => {
-  if (arg.identifier === '{"channel":"BooksChannel"}') {
+  if (
+    arg.identifier === '{"channel":"QuestionsChannel"}' ||
+    arg.identifier === '{"channel":"BooksChannel"}'
+  ) {
     return true;
   }
   if (arg.type === "confirm_subscription") {
@@ -151,6 +154,28 @@ export const booksApi = createApi({
         ws.close();
       },
     }),
+    askQuestion: builder.mutation({
+      query: ({ id, ...question }) => ({
+        url: `/books/${id}/questions`,
+        method: "POST",
+        body: { question: { question: question.question, book_id: id } },
+      }),
+      async onCacheEntryAdded(arg, { cacheEntryRemoved }) {
+        // cacheEntryRemoved will resolve when the cache subscription is no longer active
+        await cacheEntryRemoved;
+        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
+        if (ws) {
+          await ws.close();
+          ws = null;
+        }
+      },
+    }),
+    feelingLucky: builder.query({
+      query: ({ bookID }) => ({
+        url: `/books/${bookID}/questions/feeling_lucky`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -160,5 +185,7 @@ export const {
   useAddBookMutation,
   useUpdateBookMutation,
   useRemoveBookMutation,
+  useAskQuestionMutation,
+  useFeelingLuckyQuery,
   useStreamMessagesQuery,
 } = booksApi;
