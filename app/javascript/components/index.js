@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import { ListBooks, ShowBook, NewBook, EditBook } from "./pages/books";
 import Contact from "./pages/contact/Contact";
 import Layout from "./layouts/Layout/Layout";
+import About from "./pages/about/About";
 import { StrictMode } from "react";
 import ErrorPage from "./pages/error/Error";
 
@@ -46,6 +47,10 @@ const App = () => {
         {
           path: "books/new",
           element: <NewBook />,
+        },
+        {
+          path: "about",
+          element: <About />,
         },
         {
           path: "contact",
