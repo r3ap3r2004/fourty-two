@@ -7,6 +7,7 @@ class Book < ApplicationRecord
   has_one_attached :cover do |image|
     image.variant :thumb, resize_to_limit: [200, 200]
   end
+  has_many :questions, dependent: :destroy
 
   validates :title, presence: true
   validates :author, presence: true

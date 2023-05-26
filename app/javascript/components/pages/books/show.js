@@ -31,7 +31,7 @@ const ShowBook = () => {
     refetch: feelingLuckyRefetch,
     data: feelingLuckyData,
     isLoading: isFeelingLucky,
-  } = useFeelingLuckyQuery(bookID);
+  } = useFeelingLuckyQuery({ bookID: bookID });
 
   const [answer, setAnswer] = useState("");
   const [audio, setAudio] = useState("");
@@ -69,20 +69,16 @@ const ShowBook = () => {
   };
 
   const handleFeelingLucky = () => {
-    if (feelingLuckyData?.runtime) {
+    if (feelingLuckyData?.id) {
+      setQuestionID(feelingLuckyData?.id);
+      setLuckyQuestion(feelingLuckyData?.question);
       setRuntime(feelingLuckyData.runtime);
-    }
-    if (feelingLuckyData?.answer) {
       setAnswer(feelingLuckyData.answer);
-    }
-    if (feelingLuckyData?.audio_src_url) {
       setAudio(feelingLuckyData.audio_src_url);
-    }
-    if (feelingLuckyData?.audio_id) {
       setAudioID(feelingLuckyData.audio_id);
+    } else {
+      feelingLuckyRefetch();
     }
-    setLuckyQuestion(feelingLuckyData.question);
-    setQuestionID(feelingLuckyData.id);
   };
 
   useEffect(() => {
@@ -135,20 +131,12 @@ const ShowBook = () => {
         clearTimeout(audioProcessTimeout.current);
         audioProcessTimeout.current = null;
       }
-      setRuntime(questionData.runtime);
     }
-    if (questionData?.answer) {
-      setAnswer(questionData.answer);
-    }
-    if (questionData?.audio_src_url) {
-      setAudio(questionData.audio_src_url);
-    }
-    if (questionData?.audio_id) {
-      setAudioID(questionData.audio_id);
-    }
-    if (questionData?.id) {
-      setQuestionID(questionData.id);
-    }
+    setRuntime(questionData?.runtime);
+    setAnswer(questionData?.answer);
+    setAudio(questionData?.audio_src_url);
+    setAudioID(questionData?.audio_id);
+    setQuestionID(questionData?.id);
   }, [questionData, bookData]);
 
   if (bookLoading || !bookData)

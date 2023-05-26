@@ -8,7 +8,8 @@ module Api
   module V1
     # Path: app/controllers/questions_controller.rb
     class QuestionsController < ApplicationController
-      before_action :set_question, only: %i[show destroy resemble_callback]
+      before_action :set_question, only: %i[show resemble_callback]
+      before_action :set_book
       skip_before_action :verify_authenticity_token
 
       COMPLETIONS_ENDPOINT_URL = ENV.fetch('COMPLETIONS_ENDPOINT_URL', 'https://api.openai.com/v1/completions')
@@ -27,7 +28,6 @@ module Api
       def create
         # only clean the params once, then use a local variable to access the values
         clean_params = question_params
-        Rails.logger.debug { "clean_params: #{clean_params}" }
         asked_question = (clean_params[:question] || '').strip
 
         return render json: { error: 'Missing question' }, status: :unprocessable_entity if asked_question.length == 0
@@ -76,7 +76,7 @@ module Api
       end
 
       def feeling_lucky
-        @question = Question.where(audio_processing: false).order('RANDOM()').first
+        @question = Question.where(book_id: @book.id).order('RANDOM()').first
         render json: @question, status: :ok
       end
 

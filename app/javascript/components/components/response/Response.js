@@ -24,12 +24,6 @@ const Response = ({
 
   useEffect(() => {
     let typeSpeed = 100;
-    if (audioID && !runtime) {
-      // we created an audio track, but we don't know how long it is yet
-      // this means that it is still being processed by resemble.ai
-      // once it is complete we will get a runtime and display the answer
-      return;
-    }
     if (runtime && text) {
       // we know how long the audio is, so we can calculate the type speed
       typeSpeed = Math.floor(runtime / text.length);
@@ -47,6 +41,8 @@ const Response = ({
       timer = setTimeout(() => {
         showText(text, 0);
       }, typeSpeed);
+    } else {
+      setDisplayedResponse("");
     }
 
     return () => clearTimeout(timer);
@@ -61,7 +57,7 @@ const Response = ({
     );
   };
 
-  return !displayedResponse ? (
+  return displayedResponse.length === 0 ? (
     ""
   ) : (
     <div>
