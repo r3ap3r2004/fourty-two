@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AskABook</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_pack_tag "application" %>
+  </head>
+
+  <body class="devise-body">
+    <div class="devise-page" >
+      <div class="devise-content form-wrapper w-form" >
+        <% if notice || alert %>
+          <div class="devise-errors">
+            <p class="notice"><%= notice %></p>
+            <p class="alert"><%= alert %></p>
+          </div>
+        <% end %>
+        <h2 style="text-align: center;">Ask A Book</h2>
+       <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

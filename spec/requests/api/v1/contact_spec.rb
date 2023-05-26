@@ -17,6 +17,7 @@ RSpec.describe 'Contacts', type: :request do
     end
 
     it 'sends an email' do
+      sign_in(User.create!(email: 'test@example.com', password: 'password', password_confirmation: 'password'))
       expect do
         post api_v1_contact_url, params: email_params, as: :json
       end.to have_enqueued_mail(ContactMailer, :contact_email)

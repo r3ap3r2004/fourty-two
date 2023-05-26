@@ -685,3 +685,45 @@ input:focus:invalid {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+
+.devise-body {
+  height: 100%;
+  background-color: #ccc;
+}
+
+.devise-page {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.devise-content {
+  display: flex;
+  flex-direction: column;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  justify-self: center;
+  align-self: center;
+  padding: 60px;
+  background-color: white;
+}
+
+.devise-content > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.devise-actions {
+  margin: 10px 0 20px 0;
+}
+
+.devise-errors {
+  display: flex;
+  flex-direction: row;
+  color: red;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+}

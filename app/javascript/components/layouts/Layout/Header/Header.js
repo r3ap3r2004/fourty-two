@@ -8,6 +8,25 @@ function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLogout = () => {
+    // send DELETE request to /users/sign_out
+    fetch("/users/sign_out", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('[name="csrf-token"]').content,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          window.location.href = "/";
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const location = useLocation().pathname;
   const homeClass =
     location === "/" || location === "/books"
@@ -47,6 +66,13 @@ function Header() {
             <Link to={"/contact"} className={contactClass}>
               Contact
             </Link>
+            <a
+              href="#"
+              className="navigation-link w-nav-link"
+              onClick={handleLogout}
+            >
+              Logout
+            </a>
           </nav>
           <div className="menu-button w-nav-button" onClick={toggleMenu}>
             <div className="w-icon-nav-menu"></div>

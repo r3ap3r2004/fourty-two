@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_20_202508) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_26_001920) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,27 +45,39 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_20_202508) do
   create_table "books", force: :cascade do |t|
     t.string "title"
     t.string "author"
-    t.boolean "processing", default: true, null: false
-    t.text "summary"
     t.text "hint"
+    t.boolean "processing", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "summary"
   end
 
   create_table "questions", force: :cascade do |t|
     t.bigint "book_id", null: false
     t.integer "ask_count", default: 0, null: false
-    t.boolean "audio_processing", default: true, null: false
     t.string "audio_src_url"
-    t.string "audio_id"
-    t.integer "runtime", default: 0, null: false
     t.text "question", null: false
     t.text "answer", null: false
     t.text "context", null: false
+    t.boolean "audio_processing", default: true, null: false
+    t.string "audio_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "runtime"
     t.index ["book_id"], name: "index_questions_on_book_id"
     t.index ["question"], name: "index_questions_on_question"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

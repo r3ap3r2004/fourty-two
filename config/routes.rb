@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
+
   namespace :api do
     namespace :v1 do
       resources :questions, only: %i[] do
@@ -35,9 +39,12 @@ Rails.application.routes.draw do
       as: :rails_blob_representation_proxy_2
   get '/rails/active_storage/representations/:signed_blob_id/:variation_key/*filename' => 'active_storage/representations/redirect#show'
 
-  get  '/rails/active_storage/disk/:encoded_key/*filename' => 'active_storage/disk#show', as: :rails_disk_service_2
-  put  '/rails/active_storage/disk/:encoded_token' => 'active_storage/disk#update', as: :update_rails_disk_service_2
-  post '/rails/active_storage/direct_uploads' => 'active_storage/direct_uploads#create', as: :rails_direct_uploads_2
+  get  '/rails/active_storage/disk/:encoded_key/*filename' => 'active_storage/disk#show',
+       as: :rails_disk_service_2
+  put  '/rails/active_storage/disk/:encoded_token' => 'active_storage/disk#update',
+       as: :update_rails_disk_service_2
+  post '/rails/active_storage/direct_uploads' => 'active_storage/direct_uploads#create',
+       as: :rails_direct_uploads_2
 
   mount ActionCable.server => '/api/v1/cable'
 

@@ -11,8 +11,7 @@ RSpec.describe Book, type: :model do
     {
       title: 'Adventures of Huckleberry Finn',
       author: 'Mark Twain',
-      summary: 'A nice book about a couple of kids.',
-      pdf: pdf_file
+      summary: 'A nice book about a couple of kids.'
     }
   end
 
@@ -36,7 +35,15 @@ RSpec.describe Book, type: :model do
       it 'creates a new Book' do
         Sidekiq::Testing.inline! do
           expect do
-            Book.create(valid_attributes)
+            Rails.logger.debug { "valid_attributes: #{valid_attributes}" }
+            book = described_class.new(valid_attributes)
+            blob = ActiveStorage::Blob.create_and_upload!(
+              io: pdf_file,
+              filename: 'huck.pdf',
+              content_type: 'application/pdf'
+            )
+            book.pdf.attach(blob)
+            book.save!
           end.to change(Book, :count).by(1)
         end
       end

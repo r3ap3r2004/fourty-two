@@ -71,15 +71,16 @@ group :test do
   gem "webmock", "~> 3.18"
 end
 
-gem 'shakapacker', '= 6.6'
-gem 'react-rails', '= 2.7'
-gem 'tiktoken_ruby', '= 0.0.5'
-gem 'pdf-reader', '= 2.11'
-gem 'httparty', '= 0.21.0'
 gem "aws-sdk-s3", "= 1.122"
-gem "sidekiq", "= 7.1"
-gem "resemble", "~> 1.2"
+gem "devise", "~> 4.9"
 gem "hotwire-rails", "~> 0.1.3"
-gem "redis", "~> 5.0"
+gem 'httparty', '= 0.21.0'
+gem 'pdf-reader', '= 2.11'
 gem "rails-html-sanitizer", "~> 1.5"
+gem 'react-rails', '= 2.7'
+gem "redis", "~> 5.0"
+gem "resemble", "~> 1.2"
+gem "sidekiq", "= 7.1"
+gem 'shakapacker', '= 6.6'
+gem 'tiktoken_ruby', '= 0.0.5'
 

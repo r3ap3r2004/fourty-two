@@ -38,6 +38,7 @@ RSpec.describe '/questions', type: :request do
 
   describe 'POST /create' do
     before do
+      sign_in(User.create!(email: 'test@example.com', password: 'password', password_confirmation: 'password'))
       stub_request(:post, 'https://api.openai.com/v1/embeddings')
         .to_return(status: 200, body: file_fixture('openAI/responses/embeddings/who_is_the_author.json'), headers: {})
       stub_request(:post, 'https://api.openai.com/v1/completions')

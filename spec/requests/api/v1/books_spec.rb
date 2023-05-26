@@ -36,6 +36,10 @@ RSpec.describe '/api/v1/books', type: :request do
     }
   end
 
+  before do
+    sign_in(User.create!(email: 'test@example.com', password: 'password', password_confirmation: 'password'))
+  end
+
   describe 'GET /index.json' do
     it 'renders a successful response' do
       Book.create! valid_attributes
@@ -58,7 +62,6 @@ RSpec.describe '/api/v1/books', type: :request do
         .to_return(status: 200,
                    body: file_fixture('openAI/responses/embeddings/adventures_of_huckleberry_finn_page_embeddings.json'),
                    headers: {})
-
     end
 
     context 'with valid parameters' do
