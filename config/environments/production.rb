@@ -48,8 +48,7 @@ Rails.application.configure do
   # config.action_cable.mount_path = nil
   # config.action_cable.url = "wss://example.com/cable"
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
-  config.action_cable.allowed_request_origins = [ENV.fetch('ALLOWED_ORIGINS', '').split(',').map(&:strip),
-                                                 ENV.fetch('HOST', nil)]
+  config.action_cable.allowed_request_origins = [ENV.fetch('ALLOWED_ORIGINS', '').split(',').map(&:strip)].flatten
   config.web_socket_server_url = "wss://#{ENV.fetch('HOST', nil)}/api/v1/cable"
   config.action_cable.url = "wss://#{ENV.fetch('HOST', nil)}/api/v1/cable"
 

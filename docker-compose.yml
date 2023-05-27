@@ -74,7 +74,7 @@ services:
       - RAILS_LOG_TO_STDOUT=${RAILS_LOG_TO_STDOUT:-true}
 
     command: bundle exec rails
-    entrypoint: entrypoint-app.sh
+    entrypoint: docker-entrypoint.sh
 
   sidekiq:
     build: .

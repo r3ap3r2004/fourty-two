@@ -1,4 +1,4 @@
-FROM ruby:3.1.0
+FROM ruby:3.1.4
 
 # install dependencies
 RUN apt-get update -qq && apt-get install -y curl build-essential libpq-dev postgresql-client &&\
@@ -31,8 +31,13 @@ COPY . $RAILS_ROOT
 # these next three lines could be consolidated
 RUN yarn install && rake tmp:clear
 
-COPY ./entrypoint-app.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint-app.sh
+COPY ./docker-entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+
+RUN bundle exec rake assets:precompile
 
 # Rails
 EXPOSE 3000
+
+CMD ['rails', 'server', '-b', '0.0.0.0']
+ENTRYPOINT ["docker-entrypoint.sh"]
