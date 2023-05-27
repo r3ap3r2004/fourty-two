@@ -20,6 +20,9 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV['POSTGRES_HOST'] %>
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
 
 development:
   <<: *default
@@ -83,4 +86,3 @@ production:
   <<: *default
   database: ask_a_book_production
   username: ask_a_book
-  password: <%= ENV["ASK_A_BOOK_DATABASE_PASSWORD"] %>

@@ -15,10 +15,10 @@ class OpenAIError < StandardError; end
 #   - embeddings: the embeddings generated for the page
 class BookParser
   # Set the rate limits
-  REQUESTS_PER_MINUTE = ENV.fetch('REQUESTS_PER_MINUTE', 60).to_i
-  TOKENS_PER_MINUTE = ENV.fetch('TOKENS_PER_MINUTE', 150_000).to_i
-  EMBEDDINGS_MODEL = ENV.fetch('EMBEDDINGS_MODEL', 'text-embedding-ada-002')
-  EMBEDDINGS_ENDPOINT_URL = ENV.fetch('EMBEDDINGS_ENDPOINT_URL', 'https://api.openai.com/v1/embeddings')
+  OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE = ENV.fetch('OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE', 60).to_i
+  OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE = ENV.fetch('OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE', 150_000).to_i
+  OPENAI_EMBEDDINGS_MODEL = ENV.fetch('OPENAI_EMBEDDINGS_MODEL', 'text-embedding-ada-002')
+  OPENAI_EMBEDDINGS_ENDPOINT_URL = ENV.fetch('OPENAI_EMBEDDINGS_ENDPOINT_URL', 'https://api.openai.com/v1/embeddings')
 
   AUTH_HEADERS = {
     'Authorization' => "Bearer #{ENV.fetch('OPENAI_API_KEY', nil)}",
@@ -32,9 +32,9 @@ class BookParser
   def self.parse_book(input_filepath, output_filepath)
     Rails.logger.debug { "Input filepath: #{input_filepath}" }
     Rails.logger.debug { "Output filepath: #{output_filepath}" }
-    Rails.logger.debug { "REQUESTS_PER_MINUTE: #{REQUESTS_PER_MINUTE}" }
-    Rails.logger.debug { "TOKENS_PER_MINUTE: #{TOKENS_PER_MINUTE}" }
-    Rails.logger.debug { "EMBEDDINGS_MODEL: #{EMBEDDINGS_MODEL}" }
+    Rails.logger.debug { "OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE: #{OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE}" }
+    Rails.logger.debug { "OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE: #{OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE}" }
+    Rails.logger.debug { "OPENAI_EMBEDDINGS_MODEL: #{OPENAI_EMBEDDINGS_MODEL}" }
 
     # 1. open the pdf file
     pdf_file = File.open(input_filepath, 'rb')
@@ -47,7 +47,7 @@ class BookParser
     last_minute = Time.now.to_i
     request_count = 0
 
-    encoding = Tiktoken.encoding_for_model(EMBEDDINGS_MODEL)
+    encoding = Tiktoken.encoding_for_model(OPENAI_EMBEDDINGS_MODEL)
 
     # Open the CSV file and write the headers
     CSV.open(output_filepath, 'w') do |csv|
@@ -68,7 +68,7 @@ class BookParser
           t_count = encoding.encode(page_text).length
 
           Rails.logger.debug { "Tokens to submit: #{t_count}" }
-          Rails.logger.debug { "Available tokens: #{TOKENS_PER_MINUTE - token_count}" }
+          Rails.logger.debug { "Available tokens: #{OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE - token_count}" }
 
           # Check if we've exceeded the token limit for the current minute
           current_time = Time.now.to_i
@@ -79,7 +79,7 @@ class BookParser
           Rails.logger.debug { "Token count for this period: #{token_count + t_count}" }
 
           if (current_time - last_minute < 60) &&
-             ((token_count + t_count > TOKENS_PER_MINUTE) || request_count >= REQUESTS_PER_MINUTE)
+             ((token_count + t_count > OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE) || request_count >= OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE)
             # Wait for the remainder of the minute
             Rails.logger.debug { "Waiting for #{60 - (current_time - last_minute)} seconds" }
             sleep(60 - (current_time - last_minute))
@@ -121,11 +121,11 @@ class BookParser
   # Method to call the OpenAI embeddings endpoint with a single input string
   def self.call_openai_embeddings_api(input_string)
     response = HTTParty.post(
-      EMBEDDINGS_ENDPOINT_URL,
+      OPENAI_EMBEDDINGS_ENDPOINT_URL,
       headers: AUTH_HEADERS,
       body: {
         input: input_string,
-        model: EMBEDDINGS_MODEL
+        model: OPENAI_EMBEDDINGS_MODEL
       }.to_json
     )
 

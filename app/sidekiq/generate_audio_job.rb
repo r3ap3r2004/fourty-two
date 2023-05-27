@@ -14,7 +14,7 @@ class GenerateAudioJob
 
     project_uuid = ENV.fetch('RESEMBLE_PROJECT_UUID', nil)
     voice_uuid = ENV.fetch('RESEMBLE_VOICE_UUID', nil)
-    callback_uri = resemble_callback_api_v1_question_url(question, host: ENV.fetch('CALLBACK_HOST', 'http://localhost:3000'))
+    callback_uri = resemble_callback_api_v1_question_url(question, host: ENV.fetch('RESEMBLE_CALLBACK_HOST', 'http://localhost:3000'))
     Rails.logger.debug { "callback_uri: #{callback_uri}" }
 
     response = Resemble::V2::Clip.create_async(

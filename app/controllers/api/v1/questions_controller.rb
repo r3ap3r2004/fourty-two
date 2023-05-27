@@ -12,7 +12,7 @@ module Api
       before_action :set_book
       skip_before_action :verify_authenticity_token
 
-      COMPLETIONS_ENDPOINT_URL = ENV.fetch('COMPLETIONS_ENDPOINT_URL', 'https://api.openai.com/v1/completions')
+      OPENAI_COMPLETIONS_ENDPOINT_URL = ENV.fetch('OPENAI_COMPLETIONS_ENDPOINT_URL', 'https://api.openai.com/v1/completions')
       COMPLETIONS_MODEL = ENV.fetch('COMPLETIONS_MODEL', 'text-davinci-003')
       AUTH_HEADERS = {
         'Authorization' => "Bearer #{ENV.fetch('OPENAI_API_KEY', nil)}",
@@ -105,7 +105,7 @@ module Api
 
         # Call the openai completions API
         response = HTTParty.post(
-          COMPLETIONS_ENDPOINT_URL,
+          OPENAI_COMPLETIONS_ENDPOINT_URL,
           headers: AUTH_HEADERS,
           body: {
             model: COMPLETIONS_MODEL,
