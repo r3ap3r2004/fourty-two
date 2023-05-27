@@ -1,0 +1,10 @@
+.env
+storage
+node_modules
+config/master.key
+
+log/*.log
+tmp/**/*
+tmp/*
+
+.vscode

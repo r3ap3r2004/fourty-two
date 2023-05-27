@@ -1,0 +1,126 @@
+version: "3.3"
+
+services:
+  postgres:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # ports:
+    #   - 5432:5432
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-ask_a_book_development}
+
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server
+    volumes:
+      - redis_data:/data
+    # ports:
+    #   - "${REDIS_PORT:-6379}:6379"
+
+  web:
+    depends_on:
+      - postgres
+      - redis
+    build: .
+    volumes:
+      - .:/var/www/r8
+      - gem_cache:/gems
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-ask_a_book_development}
+      # resemble.ai
+      - RESEMBLE_API_KEY=${RESEMBLE_API_KEY}
+      - RESEMBLE_PROJECT_UUID=${RESEMBLE_PROJECT_UUID}
+      - RESEMBLE_VOICE_UUID=${RESEMBLE_VOICE_UUID}
+      - RESEMBLE_CALLBACK_HOST=${RESEMBLE_CALLBACK_HOST}
+      # openAI
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_COMPLETIONS_ENDPOINT_URL=${OPENAI_COMPLETIONS_ENDPOINT_URL:-'https://api.openai.com/v1/completions'}
+      - OPENAI_EMBEDDINGS_ENDPOINT_URL=${OPENAI_EMBEDDINGS_ENDPOINT_URL:-'https://api.openai.com/v1/embeddings'}
+      - OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE=${OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE:-60}
+      - OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE=${OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE:-150000}
+      - OPENAI_EMBEDDINGS_MODEL=${OPENAI_EMBEDDINGS_MODEL:-'text-embedding-ada-002'}
+      # S3 settings for activestorage
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - PRIVATE_S3_BUCKET_REGION=${PRIVATE_S3_BUCKET_REGION:-us-east-1}
+      - PRIVATE_S3_BUCKET_NAME=${PRIVATE_S3_BUCKET_NAME}
+      # sidekiq password http://localhost:3000/sidekiq
+      - SIDEKIQ_USER=${SIDEKIQ_USER:-sidekiq}
+      - SIDEKIQ_PASSWORD=${SIDEKIQ_PASSWORD:-password}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+      - HOST=${HOST:-localhost:3000}
+      - OUTBOUND_EMAIL=${OUTBOUND_EMAIL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-false}
+      # log to stdout
+      - RAILS_LOG_TO_STDOUT=${RAILS_LOG_TO_STDOUT:-true}
+
+    command: bundle exec rails
+    entrypoint: entrypoint-app.sh
+
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    depends_on:
+      - redis
+    volumes:
+      - .:/var/www/r8
+      - gem_cache:/gems
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-ask_a_book_development}
+      # resemble.ai
+      - RESEMBLE_API_KEY=${RESEMBLE_API_KEY}
+      - RESEMBLE_PROJECT_UUID=${RESEMBLE_PROJECT_UUID}
+      - RESEMBLE_VOICE_UUID=${RESEMBLE_VOICE_UUID}
+      - RESEMBLE_CALLBACK_HOST=${RESEMBLE_CALLBACK_HOST}
+      # openAI
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_COMPLETIONS_ENDPOINT_URL=${OPENAI_COMPLETIONS_ENDPOINT_URL:-'https://api.openai.com/v1/completions'}
+      - OPENAI_EMBEDDINGS_ENDPOINT_URL=${OPENAI_EMBEDDINGS_ENDPOINT_URL:-'https://api.openai.com/v1/embeddings'}
+      - OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE=${OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE:-60}
+      - OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE=${OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE:-150000}
+      - OPENAI_EMBEDDINGS_MODEL=${OPENAI_EMBEDDINGS_MODEL:-'text-embedding-ada-002'}
+      # S3 settings for activestorage
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - PRIVATE_S3_BUCKET_REGION=${PRIVATE_S3_BUCKET_REGION:-us-east-1}
+      - PRIVATE_S3_BUCKET_NAME=${PRIVATE_S3_BUCKET_NAME}
+      # sidekiq password http://localhost:3000/sidekiq
+      - SIDEKIQ_USER=${SIDEKIQ_USER:-sidekiq}
+      - SIDEKIQ_PASSWORD=${SIDEKIQ_PASSWORD:-password}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+      - HOST=${HOST:-localhost:3000}
+      - OUTBOUND_EMAIL=${OUTBOUND_EMAIL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+
+volumes:
+  postgres_data:
+  redis_data:
+  gem_cache:
