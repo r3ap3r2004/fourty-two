@@ -85,4 +85,3 @@ test:
 production:
   <<: *default
   database: ask_a_book_production
-  username: ask_a_book

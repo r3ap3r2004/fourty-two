@@ -11,6 +11,7 @@ module Api
       before_action :set_question, only: %i[show resemble_callback]
       before_action :set_book
       skip_before_action :verify_authenticity_token
+      skip_before_action :authenticate_user!, :only => :resemble_callback
 
       OPENAI_COMPLETIONS_ENDPOINT_URL = ENV.fetch('OPENAI_COMPLETIONS_ENDPOINT_URL', 'https://api.openai.com/v1/completions')
       COMPLETIONS_MODEL = ENV.fetch('COMPLETIONS_MODEL', 'text-davinci-003')
