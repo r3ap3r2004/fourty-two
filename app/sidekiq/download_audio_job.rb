@@ -13,7 +13,7 @@ class DownloadAudioJob
     downloaded_mp3 = URI.parse(url).open { |f| f.read }
 
     # attach the mp3 file to the question
-    question.mp3.attach(io: downloaded_mp3, filename: `question_#{question.id}`)
+    question.mp3.attach(io: downloaded_mp3, filename: "question_#{question.id}")
 
     return unless question.save!
     raise "failed to attach the mp3 file #{url}" unless question.mp3.attached?
