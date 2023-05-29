@@ -1,0 +1,126 @@
+name: CI
+on: push
+
+jobs:
+  linters:
+    name: Linters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run linters
+        run: bundle exec rubocop --parallel
+
+      - name: Run security checks
+        run: bundle exec brakeman
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Update apt
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get update -qq -o Acquire::Retries=3
+
+      - name: Install libvips
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run:
+          # we only need the library
+          sudo apt-get install --fix-missing -qq -o Acquire::Retries=3
+          libvips
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.11.0"
+          cache: "yarn"
+
+      - name: Yarn Install
+        run: yarn install
+
+      - name: Run coverage task
+        run: bundle exec rails "coverage:basic[28.6]"
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Update apt
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get update -qq -o Acquire::Retries=3
+
+      - name: Install libvips
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run:
+          # we only need the library
+          sudo apt-get install --fix-missing -qq -o Acquire::Retries=3
+          libvips
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20.1.2"
+          cache: "yarn"
+
+      - name: Yarn Install
+        run: yarn install
+
+      - name: Setup Database
+        env:
+          RAILS_ENV: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: ask_a_book_test
+        run: |
+          cp config/database.yml.ci config/database.yml
+          bundle exec rails db:test:prepare
+
+      - name: Run specs
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: ask_a_book_test
+          CI: true
+        run: bundle exec rspec
