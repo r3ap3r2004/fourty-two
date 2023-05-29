@@ -51,6 +51,8 @@ docker_setup_env() {
     file_env 'PRIVATE_S3_BUCKET_NAME'
     file_env 'SIDEKIQ_USER'
     file_env 'SIDEKIQ_PASSWORD'
+    file_env 'SMTP_HOST'
+    file_env 'SMTP_PORT'
     file_env 'SMTP_USER'
     file_env 'SMTP_PASSWORD'
     file_env 'REDIS_URL'
