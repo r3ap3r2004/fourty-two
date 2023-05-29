@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'action_dispatch/routing/inspector'
 
+# determine code coverage
 namespace :coverage do
   # Check for missing specs
   #
@@ -18,6 +21,7 @@ namespace :coverage do
 end
 
 module Coverage
+  # verify coverage
   class Verifier
     def check_requests(threshold)
       verifier = RequestVerifier.new
