@@ -18,6 +18,18 @@
 
 require 'webmock/rspec'
 require 'sidekiq/testing'
+require 'simplecov'
+
+# check coverage if the env var is set
+if ENV.fetch('COVERAGE', false)
+  SimpleCov.start do
+    add_filter %r{^/spec/}
+    add_filter %r{^/config/initializers/}
+
+    minimum_coverage 98
+    maximum_coverage_drop 1
+  end
+end
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

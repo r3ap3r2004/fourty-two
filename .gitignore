@@ -40,3 +40,4 @@ yarn-debug.log*
 # Ignore environment variables
 .env
 .vscode
+coverage
