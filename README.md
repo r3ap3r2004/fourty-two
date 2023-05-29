@@ -81,6 +81,7 @@ and is the only one that is documented here.
    - You should set the others as well, but without the previous keys the app won't work.
 1. Make sure that you have docker installed.
 1. Run `docker compose up` to start the server.
+1. Run `./script/create_user.sh` to create a user. Alternatively you can set the environment variable `ALLOW_REGISTRATION=true` which will allow you to register via the frontend interface.
 
 That really is all that is required to get the server running. You can then access the server at http://localhost:3000
 
@@ -122,4 +123,3 @@ If you are running the docker version you can access a rails console by running:
 ```bash
 ./script/console.sh
 ```
-
