@@ -23,7 +23,7 @@ const Response = ({
   }, [audio]);
 
   useEffect(() => {
-    let typeSpeed = 100;
+    let typeSpeed = 25;
     if (runtime && text) {
       // we know how long the audio is, so we can calculate the type speed
       typeSpeed = Math.floor(runtime / text.length);
