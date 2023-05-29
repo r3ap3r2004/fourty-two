@@ -52,11 +52,15 @@ function Header() {
         role="banner"
         className="navigation-bar w-nav"
       >
-        <div className="w-container">
+        <div className="w-container" style={{ position: "relative" }}>
           <Link to={"/"} className="w-nav-brand w--current">
             <div className="site-name">Ask A Book</div>
           </Link>
-          <nav role="navigation" className="navigation-menu w-nav-menu">
+          <nav
+            role="navigation"
+            style={{ display: isMenuOpen ? "block" : "" }}
+            className="navigation-menu w-nav-menu"
+          >
             <Link to={"/"} className={homeClass}>
               Home
             </Link>
@@ -74,7 +78,11 @@ function Header() {
               Logout
             </a>
           </nav>
-          <div className="menu-button w-nav-button" onClick={toggleMenu}>
+          <div
+            style={{ position: "absolute", right: "10px", top: "0px" }}
+            className="menu-button w-nav-button"
+            onClick={toggleMenu}
+          >
             <div className="w-icon-nav-menu"></div>
           </div>
         </div>

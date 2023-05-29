@@ -25,7 +25,7 @@
     "snakeize": "^0.1.0",
     "style-loader": "^3.3.2",
     "terser-webpack-plugin": "5",
-    "webpack": "5",
+    "webpack": "^5.84.1",
     "webpack-assets-manifest": "5",
     "webpack-cli": "4",
     "webpack-dev-server": "^4.15.0",
