@@ -37,6 +37,7 @@ services:
     env_file:
       - .env
     environment:
+      - WEBAPP=true
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
@@ -73,7 +74,7 @@ services:
       # log to stdout
       - RAILS_LOG_TO_STDOUT=${RAILS_LOG_TO_STDOUT:-true}
 
-    command: bundle exec rails
+    command: bundle exec rails s -b '0.0.0.0'
     entrypoint: docker-entrypoint.sh
 
   sidekiq:
