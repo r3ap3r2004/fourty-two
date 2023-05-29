@@ -81,6 +81,7 @@ const ShowBook = () => {
     }
   };
 
+  // streamData gets brought in via ActionCable an happens when the audio finishes processing
   useEffect(() => {
     if (
       streamData &&

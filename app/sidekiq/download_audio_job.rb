@@ -2,15 +2,13 @@
 
 require 'open-uri'
 
+# Job to handle downloading of audio from resemble.ai to local storage
 class DownloadAudioJob
   include Sidekiq::Job
 
   def perform(id, url)
     question = Question.find(id)
-
-    # use the URI.parse to prevent malicious urls being passed to open
-    # for example open("| ls") or worse
-    downloaded_mp3 = URI.parse(url).open { |f| f.read }
+    downloaded_mp3 = URI.parse(url).open(&:read)
 
     # attach the mp3 file to the question
     question.mp3.attach(io: downloaded_mp3, filename: "question_#{question.id}")

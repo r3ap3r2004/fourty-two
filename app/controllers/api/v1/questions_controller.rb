@@ -11,7 +11,7 @@ module Api
       before_action :set_question, only: %i[show resemble_callback]
       before_action :set_book
       skip_before_action :verify_authenticity_token
-      skip_before_action :authenticate_user!, :only => :resemble_callback
+      skip_before_action :authenticate_user!, only: :resemble_callback
 
       OPENAI_COMPLETIONS_ENDPOINT_URL = ENV.fetch('OPENAI_COMPLETIONS_ENDPOINT_URL', 'https://api.openai.com/v1/completions')
       COMPLETIONS_MODEL = ENV.fetch('COMPLETIONS_MODEL', 'text-davinci-003')
@@ -31,24 +31,12 @@ module Api
         clean_params = question_params
         asked_question = (clean_params[:question] || '').strip
 
-        return render json: { error: 'Missing question' }, status: :unprocessable_entity if asked_question.length == 0
+        return render json: { error: 'Missing question' }, status: :unprocessable_entity if asked_question.empty?
 
         # make sure our question ends with a question mark
         asked_question += '?' unless asked_question[-1] == '?'
 
-        # see if we have already asked this question or not
-        @question = Question.find_by(book_id: clean_params[:book_id], question: asked_question)
-        if @question
-          @question.ask_count += 1
-          @question.save
-          return show
-        end
-
-        clean_params[:question] = asked_question
-        # we didn't have an existing question, so let's create one
-        @question = Question.new(clean_params)
-        @question.book = Book.find(clean_params[:book_id])
-        @question.ask_count = 1
+        @question = find_or_build_question(clean_params, asked_question)
 
         # answer = answer_question(@question)
         answer, context = answer_question(@question)
@@ -70,7 +58,7 @@ module Api
         ActionCable.server.broadcast 'questions',
                                      render_to_string({ template: 'api/v1/questions/show', formats: [:json] })
 
-        # @ TODO: Fix this to download the file in the background once we can successfully follow resemble.ai's redirect urls
+        # @ TODO: Fix this to download the file in the background once we can successfully follow resemble.ai's redirect
         # DownloadAudioJob.perform_async(@question.id, @question.audio_src_url)
 
         head :ok
@@ -82,6 +70,24 @@ module Api
       end
 
       private
+
+      def find_or_build_question(clean_params, asked_question)
+        question = Question.find_by(book_id: clean_params[:book_id], question: asked_question)
+        if question
+          question.ask_count += 1
+          question
+        else
+          build_question(clean_params, asked_question)
+        end
+      end
+
+      def build_question(clean_params, asked_question)
+        question = Question.new(clean_params)
+        question.book = Book.find(clean_params[:book_id])
+        question.ask_count = 1
+        question.question = asked_question
+        question
+      end
 
       # Use callbacks to share common setup or constraints between actions.
       def set_question
@@ -101,28 +107,16 @@ module Api
         # Find the appropriate book sections
         # prompt = generate_prompt(question, question.book)
         prompt, context = generate_prompt(question, question.book)
-        Rails.logger.debug { "prompt: #{prompt}" }
-        Rails.logger.debug { "context: #{context}" }
 
         # Call the openai completions API
         response = HTTParty.post(
           OPENAI_COMPLETIONS_ENDPOINT_URL,
           headers: AUTH_HEADERS,
-          body: {
-            model: COMPLETIONS_MODEL,
-            prompt:,
-            temperature: 0.0,
-            max_tokens: 150,
-            n: 1
-
-          }.to_json
+          body: { model: COMPLETIONS_MODEL, prompt:, temperature: 0.0, max_tokens: 150, n: 1 }.to_json
         )
-
         answer = ''
-
         if response.success?
           response_json = JSON.parse(response.body)
-          Rails.logger.debug { "response_json: #{response_json}" }
           answer = response_json['choices'][0]['text']
         end
 
@@ -141,11 +135,11 @@ module Api
         embeddings.sort_by { |section| section[:similarity] }.reverse
       end
 
-      def vector_similarity(x, y)
+      def vector_similarity(x_val, y_val)
         # Calculate the similarity between two vectors
         # use the dot product of the two vectors
-        a = Vector.send(:new, x)
-        b = Vector.send(:new, y)
+        a = Vector.send(:new, x_val)
+        b = Vector.send(:new, y_val)
         a.inner_product(b)
       end
 
@@ -155,7 +149,8 @@ module Api
       end
 
       def generate_prompt(question, book)
-        max_section_data_len = 500 # most pages have more than 500 words, so we will increase this to 1500 to allow about 2.5 pages per query
+        # most pages have more than 500 words, so increase this to 1500 to allow about 2.5 pages per query
+        max_section_data_len = 500
         separator = "\n* "
         separator_len = 3
 
@@ -174,7 +169,10 @@ module Api
 
         context = chosen_sections.join
         [
-          "#{book.hint}#{separator}#{context}\n\nPlease keep your answers to three sentences maximum, and speak in complete sentences. Stop speaking once your point is made. Base your response on the context provided above.\n\nQ:#{question.question}\nA:\n", context
+          "#{book.hint}#{separator}#{context}\n\n" \
+          'Please keep your answers to three sentences maximum, and speak in complete sentences. ' \
+          "Stop speaking once your point is made. Base your response on the context provided above.\n\n" \
+          "Q:#{question.question}\nA:\n", context
         ]
       end
     end

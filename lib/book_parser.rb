@@ -79,7 +79,9 @@ class BookParser
           Rails.logger.debug { "Token count for this period: #{token_count + t_count}" }
 
           if (current_time - last_minute < 60) &&
-             ((token_count + t_count > OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE) || request_count >= OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE)
+             ((token_count + t_count > OPENAI_EMBEDDINGS_TOKENS_PER_MINUTE) ||
+             request_count >= OPENAI_EMBEDDINGS_REQUESTS_PER_MINUTE)
+
             # Wait for the remainder of the minute
             Rails.logger.debug { "Waiting for #{60 - (current_time - last_minute)} seconds" }
             sleep(60 - (current_time - last_minute))

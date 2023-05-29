@@ -7,15 +7,15 @@ module Api
       skip_before_action :verify_authenticity_token
 
       def create
-        clean_params = {
-          name: ActionController::Base.helpers.sanitize(params[:contact][:name]),
-          email: ActionController::Base.helpers.sanitize(params[:contact][:email]),
-          message: ActionController::Base.helpers.sanitize(params[:contact][:message])
-        }
-        # need to send an email to the admin with the contact_params
-        ContactMailer.with(contact: clean_params).contact_email.deliver_later
+        ContactMailer.with(contact: contact_params).contact_email.deliver_later
 
         render json: { message: 'Contact sent successfully' }, status: :created
+      end
+
+      private
+
+      def contact_params
+        params.require(:contact).permit(:name, :email, :message)
       end
     end
   end

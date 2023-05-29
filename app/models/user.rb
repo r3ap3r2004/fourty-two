@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This code disables user registration if the ALLOW_REGISTRATION environment variable is set to false.
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable, :registerable,

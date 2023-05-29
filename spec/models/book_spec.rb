@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe Book, type: :model do
+RSpec.describe Book do
   let! :pdf_file do
     fixture_file_upload('pdf/adventures_of_huckleberry_finn.pdf', 'application/pdf')
   end
@@ -24,27 +26,28 @@ RSpec.describe Book, type: :model do
   end
 
   describe 'check for openAI calling' do
+    let(:embeddings) do
+      file_fixture('openAI/responses/embeddings/adventures_of_huckleberry_finn_page_embeddings.json')
+    end
+
     before do
       stub_request(:post, 'https://api.openai.com/v1/embeddings')
         .to_return(status: 200,
-                   body: file_fixture('openAI/responses/embeddings/adventures_of_huckleberry_finn_page_embeddings.json'),
+                   body: embeddings,
                    headers: {})
     end
 
     context 'with valid parameters' do
-      it 'creates a new Book' do
+      it 'creates a new book' do
         Sidekiq::Testing.inline! do
           expect do
             Rails.logger.debug { "valid_attributes: #{valid_attributes}" }
             book = described_class.new(valid_attributes)
-            blob = ActiveStorage::Blob.create_and_upload!(
-              io: pdf_file,
-              filename: 'huck.pdf',
-              content_type: 'application/pdf'
-            )
+            blob = ActiveStorage::Blob.create_and_upload!(io: pdf_file, filename: 'huck.pdf',
+                                                          content_type: 'application/pdf')
             book.pdf.attach(blob)
             book.save!
-          end.to change(Book, :count).by(1)
+          end.to change(described_class, :count).by(1)
         end
       end
     end
@@ -53,8 +56,8 @@ RSpec.describe Book, type: :model do
       it 'does not create a new Book' do
         Sidekiq::Testing.inline! do
           expect do
-            Book.create(invalid_attributes)
-          end.not_to change(Book, :count)
+            described_class.create(invalid_attributes)
+          end.not_to change(described_class, :count)
         end
       end
     end

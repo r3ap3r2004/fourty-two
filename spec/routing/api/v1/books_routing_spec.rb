@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe Api::V1::BooksController, type: :routing do
+RSpec.describe Api::V1::BooksController do
   describe 'routing' do
     it 'routes to #index' do
       expect(get: '/api/v1/books').to route_to('api/v1/books#index')

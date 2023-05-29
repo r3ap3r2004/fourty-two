@@ -5,7 +5,7 @@ namespace :users do
   desc 'Create a user'
   task :create_user, %i[email password] => :environment do |_t, args|
     Rails.logger = Logger.new($stdout)
-    if args[:password].nil? || args[:password].nil?
+    if args[:email].nil? || args[:password].nil?
       puts 'Usage: rake users:create_user[<email>,<password>]'
       exit
     end

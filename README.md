@@ -116,3 +116,10 @@ If you are running the app locally outside of docker then the command can be sim
 ```bash
 bundle exec rake book_parser:parse_book[./spec/fixtures/adventures_of_huckleberry_finn.pdf,./adventures_of_huckleberry_finn.csv]
 ```
+
+If you are running the docker version you can access a rails console by running:
+
+```bash
+./script/console.sh
+```
+

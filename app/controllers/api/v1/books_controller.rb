@@ -5,7 +5,7 @@ module Api
   module V1
     # Path: app/controllers/api/v1/books_controller.rb
     class BooksController < ApplicationController
-      before_action :set_book, only: %i[show edit update destroy]
+      before_action :set_book, only: %i[show update destroy]
       skip_before_action :verify_authenticity_token
 
       # GET /books or /books.json

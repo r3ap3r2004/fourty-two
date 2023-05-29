@@ -33,7 +33,7 @@ AllCops:
   CacheRootDirectory: tmp/
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
   Exclude:
     - lib/book_parser.rb
 
@@ -43,7 +43,23 @@ Rails/I18nLocaleTexts:
 Metrics/BlockLength:
   Exclude:
     - lib/book_parser.rb
+    - config/routes.rb
+    - config/environments/*.rb
+    - spec/**/*.rb
+    - lib/tasks/**/*.rake
 
 Metrics/AbcSize:
   Exclude:
     - lib/book_parser.rb
+    - app/sidekiq/generate_embeddings_job.rb
+
+RSpec/ExampleLength:
+  Max: 15
+
+Metrics/ClassLength:
+  Exclude:
+    - app/controllers/api/v1/questions_controller.rb
+
+# Checks if example groups contain too many `let` and `subject` calls.
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false

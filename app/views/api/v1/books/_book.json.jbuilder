@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 json.extract! book, :id, :title, :author, :created_at, :updated_at, :summary, :processing, :hint
 if book.cover.attached? && book.cover.variable?
   json.cover_image polymorphic_url(book.cover.variant(:thumb),

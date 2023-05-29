@@ -34,6 +34,7 @@ file_env() {
 # Loads various settings that are used elsewhere in the script
 docker_setup_env() {
 	# Initialize values that are stored in a file, but don't have internal support for it
+  # this is used for Docker Swarm where environment variables are stored in secrets
     file_env 'RAILS_MASTER_KEY'
     file_env 'SECRET_KEY_BASE'
     file_env 'POSTGRES_USER'
@@ -63,17 +64,12 @@ _main() {
 	# Load various environment variables
 	docker_setup_env "$@"
 
-  rm -f /var/www/r8/tmp/pids/server.pid
-  ./bin/rails db:create
-  ./bin/rails db:migrate
 
   # if the environment variable SIDEKIQ is set to true, then start sidekiq otherwise start rails
-  if [[ $SIDEKIQ == "true" ]]; then
-    echo "starting sidekiq"
-    bundle exec sidekiq 
-  else
-    echo "starting rails"
-    ./bin/rails s -b  0.0.0.0
+  if [[ $WEBAPP == "true" ]]; then
+    rm -f /var/www/r8/tmp/pids/server.pid
+    ./bin/rails db:create
+    ./bin/rails db:migrate
   fi
 
 	exec "$@"

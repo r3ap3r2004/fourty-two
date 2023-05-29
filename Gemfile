@@ -39,7 +39,7 @@ gem 'bootsnap', require: false
 # gem "sassc-rails"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -68,19 +68,20 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'webdrivers'
-  gem "webmock", "~> 3.18"
+  gem 'webmock', '~> 3.18'
 end
 
-gem "aws-sdk-s3", "= 1.122"
-gem "devise", "~> 4.9"
-gem "hotwire-rails", "~> 0.1.3"
+gem 'aws-sdk-s3', '= 1.122'
+gem 'devise', '~> 4.9'
+gem 'hotwire-rails', '~> 0.1.3'
 gem 'httparty', '= 0.21.0'
 gem 'pdf-reader', '= 2.11'
-gem "rails-html-sanitizer", "~> 1.5"
+gem 'rails-html-sanitizer', '~> 1.5'
 gem 'react-rails', '= 2.7'
-gem "redis", "~> 5.0"
-gem "resemble", "~> 1.2"
-gem "sidekiq", "= 7.1"
+gem 'redis', '~> 5.0'
+gem 'resemble', '~> 1.2'
 gem 'shakapacker', '= 6.6'
+gem 'sidekiq', '= 7.1'
 gem 'tiktoken_ruby', '= 0.0.5'
 
+gem 'brakeman', '~> 6.0'
