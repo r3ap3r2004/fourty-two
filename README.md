@@ -110,13 +110,15 @@ You can generate the embeddings for a book by running the following command:
 docker compose run web bundle exec rake book_parser:parse_book[./spec/fixtures/adventures_of_huckleberry_finn.pdf,./adventures_of_huckleberry_finn.csv]
 ```
 
-Note: The file will need to exist inside the docker container. When running in dev mode is folder and all subfolders are mounted into the docker container so you can place the file in any subfolder and it will be accessible to the docker container.
+Note: The file will need to exist inside the docker container. When running in dev mode this folder and all subfolders are mounted into the docker container so you can place the file in any subfolder and it will be accessible to the docker container.
 
 If you are running the app locally outside of docker then the command can be simplified to be:
 
 ```bash
 bundle exec rake book_parser:parse_book[./spec/fixtures/adventures_of_huckleberry_finn.pdf,./adventures_of_huckleberry_finn.csv]
 ```
+
+You do not need to convert a pdf in this manner though. You can upload a pdf via the frontend interface to add a new book to the library.
 
 If you are running the docker version you can access a rails console by running:
 
